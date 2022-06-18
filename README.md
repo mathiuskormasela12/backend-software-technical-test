@@ -1,6 +1,6 @@
-# Ucars Backend
+# Software Technical Test (RESTful API)
 
-This is a RESTfull API for a technical test as Full-Stack Developer at Ucars
+This is a RESTfull API for a technical test as Full-Stack Developer
 
 ## Installation 
 
@@ -30,28 +30,20 @@ This is a RESTfull API for a technical test as Full-Stack Developer at Ucars
 
 ## API SPECS
 
-- POST `/api/v1/auth/register` (Register)
+- POST `/api/v1/users/join` (Join to a chat room)
 
 	Request Body
 
 	```
 	{
 		"username": "your username",
-		"password": "your password"
+		"roomId": "your room id"
 	}
 	```
 
-- POST `/api/v1/auth/login` (Login)
+- PUT `/api/v1/users/exit/:id/:roomId` (Exit from Chat Room)
 
-	Request Body
-
-	```
-	{
-		"username": "your username",
-		"password": "your password"
-	}
-	```
-- POST `/api/v1/auth/access-token` (Create an Acess Token)
+- POST `/api/v1/user/access-token` (Create an Acess Token)
 
 	Request Body
 
@@ -61,85 +53,18 @@ This is a RESTfull API for a technical test as Full-Stack Developer at Ucars
 	}
 	```
 
-- POST `/api/v1/cars/brand` (Add a Car Brand)
-
-	Request Body (Multipart/Form-Data)
-
-	```
-	{
-		"name": "car brand name",
-		"carModelId": "model id",
-		"year": "year",
-		"description": "description",
-		"logo": "image"
-	}
-	```
-
-- POST `/api/v1/cars/model` (Add a Car Model)
+- POST `/api/v1/messages` (Sending a message)
 
 	Request Body
 
 	```
 	{
-		"modelName": "model name",
-		"year": "year",
+		"activeRoomId": "your active room id",
+		"message": "your message"
 	}
 	```
 
-- GET `/api/v1/cars/model` (Get All Car Models)
-
-	Request Query
-
-	```
-	{
-		"page": "page",
-		"limit": "limit"
-	}
-	```
-
-- GET `/api/v1/cars/brand` (Get All Car Brands)
-
-	Request Query
-
-	```
-	{
-		"page": "page",
-		"limit": "limit",
-		"keywords": "keywords"
-	}
-	```
-
-- GET `/api/v1/cars/brand/:id` (Get Detail a Car Brand)
-
-- PUT `/api/v1/cars/model/:id` (Update a Car Model)
-
-	Request Body
-
-	```
-	{
-		"modelName": "model name",
-		"year": "year",
-	}
-	```
-
-- PUT `/api/v1/cars/brand/:id` (Update a Car Brand)
-
-	Request Body (Multipart/Form-Data)
-
-	```
-	{
-		"name": "car brand name",
-		"carModelId": "model id",
-		"year": "year",
-		"description": "description",
-		"logo": "image"
-	}
-	```
-
-- DELETE `/api/v1/cars/model/:id` (Delete a Car Model)
-
-- DELETE `/api/v1/cars/brand/:id` (Delete a Car Brand)
-
+- GET `/api/v1/messages/:activeRoomId` (Get All Messages)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
