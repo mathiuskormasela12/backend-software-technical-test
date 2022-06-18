@@ -18,7 +18,7 @@ namespace UsersRoutesModul {
 
 	  public routes(): void {
 	    this.expressRouter.post('/join', joinRoomMiddleware, authControlerModule.UsersControllers.joinRoom);
-	    this.expressRouter.put('/exit/:id', exitRoomMiddleware, authControlerModule.UsersControllers.exitFromRoom);
+	    this.expressRouter.put('/exit/:id/:roomId', exitRoomMiddleware, authControlerModule.UsersControllers.exitFromRoom);
 	    this.expressRouter.post('/access-token', checkGenerateAccessTokenForm, authControlerModule.UsersControllers.generateAccessToken);
 	  }
 

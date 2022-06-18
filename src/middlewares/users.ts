@@ -1,7 +1,7 @@
 // ========== Auth Middleware
 // import all modules
 import { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from 'express';
-import { check, validationResult } from 'express-validator';
+import { check, param, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { appConfig } from '../config';
 import { response } from '../helpers';
@@ -24,8 +24,10 @@ export const joinRoomMiddleware = [
 ];
 
 export const exitRoomMiddleware = [
-  check('id', 'The id must be a string').isString(),
-  check('id', 'The id is invalid').isMongoId(),
+  param('id', 'The id must be a string').isString(),
+  param('id', 'The id is invalid').isMongoId(),
+  param('roomId', 'The room id must be a string').isString(),
+  param('roomId', 'The room id is invalid').isMongoId(),
 
   (req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
     const errors = validationResult(req);

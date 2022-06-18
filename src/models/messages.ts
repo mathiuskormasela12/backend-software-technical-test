@@ -3,11 +3,7 @@
 import { Schema, model } from 'mongoose';
 
 const cars = new Schema({
-  senderName: {
-    type: String,
-    required: true,
-  },
-  senderId: {
+  activeRoomId: {
     type: String,
     required: true,
   },

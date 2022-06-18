@@ -1,12 +1,12 @@
-// ========= Users
+// ========= Rooms Model
 // import all modules
 import { Schema, model } from 'mongoose';
 
-const users = new Schema({
-  username: {
+const rooms = new Schema({
+  roomId: {
     type: String,
     required: true,
   },
 });
 
-export default model('User', users);
+export default model('Room', rooms);

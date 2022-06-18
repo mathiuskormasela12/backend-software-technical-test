@@ -4,6 +4,8 @@ import { Request as ExpressRequest, Response as ExpressResponse } from 'express'
 import jwt from 'jsonwebtoken';
 import { generateToken, response } from '../helpers';
 import UsersModel from '../models/users';
+import RoomsModel from '../models/rooms';
+import ActiveRoomsModel from '../models/activeRooms';
 import { appConfig } from '../config';
 
 namespace UsersControllersModule {
@@ -17,60 +19,227 @@ namespace UsersControllersModule {
 	    try {
 	      const user = await UsersModel.findOne({ username });
 
-	      if (user && user.alreadyLoggedIn) {
-	        return response(req, res, 400, false, 'The username has been used by other people');
-	      }
-
 	      if (user) {
-	        try {
-	          await UsersModel.updateOne({ id: user.id }, { $set: { alreadyLoggedIn: true } });
-	          const accessToken: string = generateToken(
-	            {
-	              id: user.id,
-	            },
-	            appConfig.jwtAcessTokenSecretKey,
-	            appConfig.jwtAccessTokenExpiresIn,
-	          );
-	          const refreshToken: string = generateToken(
-	            {
-	              id: user.id,
-	            },
-	            appConfig.jwtRefreshTokenSecretKey,
-	            appConfig.jwtRefreshTokenExpiresIn,
-	          );
+	        const isRoomExists = await RoomsModel.findOne({ roomId });
 
-	          return response(req, res, 200, true, 'You have joined to the room', { accessToken, refreshToken });
-	        } catch (err: any) {
-	          return response(req, res, 500, false, err.message);
+	        if (isRoomExists) {
+	          const isRoomActiveExists = await ActiveRoomsModel.findOne({ idRoom: isRoomExists.id, uid: user.id });
+
+	          if (isRoomActiveExists) {
+	            if (isRoomActiveExists.alreadyLoggedIn) {
+	              return response(req, res, 200, true, 'The username has been used in this room');
+	            }
+	            try {
+	              await ActiveRoomsModel.updateOne({ id: isRoomActiveExists.id }, { $set: { alreadyLoggedIn: true } });
+	              const accessToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtAcessTokenSecretKey,
+	                appConfig.jwtAccessTokenExpiresIn,
+	              );
+	              const refreshToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtRefreshTokenSecretKey,
+	                appConfig.jwtRefreshTokenExpiresIn,
+	              );
+
+	              return response(req, res, 200, true, 'You have joined to the room', { accessToken, refreshToken, roomId: isRoomExists.id });
+	            } catch (err: any) {
+	              return response(req, res, 500, false, err.message);
+	            }
+	          }
+	            const roomActiveData = new ActiveRoomsModel({ idRoom: isRoomExists.id, uid: user.id, alreadyLoggedIn: true });
+	            try {
+	              await roomActiveData.save();
+	              const accessToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtAcessTokenSecretKey,
+	                appConfig.jwtAccessTokenExpiresIn,
+	              );
+	              const refreshToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtRefreshTokenSecretKey,
+	                appConfig.jwtRefreshTokenExpiresIn,
+	              );
+
+	              return response(req, res, 200, true, 'You have joined to the room', { accessToken, refreshToken, roomId: isRoomExists.id });
+	            } catch (err: any) {
+	              return response(req, res, 500, false, err.message);
+	            }
+	        } else {
+	          const roomData = new RoomsModel({ roomId });
+	          try {
+	            const results = await roomData.save();
+	            const isRoomActiveExists = await ActiveRoomsModel.findOne({ idRoom: results.id, uid: user.id });
+
+	          if (isRoomActiveExists) {
+	            if (isRoomActiveExists.alreadyLogggedIn) {
+	              return response(req, res, 200, true, 'The username has been used in this room');
+	            }
+	            const accessToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtAcessTokenSecretKey,
+	                appConfig.jwtAccessTokenExpiresIn,
+	              );
+	              const refreshToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtRefreshTokenSecretKey,
+	                appConfig.jwtRefreshTokenExpiresIn,
+	              );
+
+	              return response(req, res, 200, true, 'You have joined to the room', { accessToken, refreshToken, roomId: results.id });
+	          }
+	            const roomActiveData = new ActiveRoomsModel({ idRoom: results.id, uid: user.id, alreadyLoggedIn: true });
+	            try {
+	              await roomActiveData.save();
+	              const accessToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtAcessTokenSecretKey,
+	                appConfig.jwtAccessTokenExpiresIn,
+	              );
+	              const refreshToken: string = generateToken(
+	                {
+	                  id: user.id,
+	                },
+	                appConfig.jwtRefreshTokenSecretKey,
+	                appConfig.jwtRefreshTokenExpiresIn,
+	              );
+
+	              return response(req, res, 200, true, 'You have joined to the room', { accessToken, refreshToken, roomId: results.id });
+	            } catch (err: any) {
+	              return response(req, res, 500, false, err.message);
+	            }
+	          } catch (err: any) {
+	            return response(req, res, 500, false, err.message);
+	          }
 	        }
-	      }
+	      } else {
+	       const accountData = new UsersModel({ username });
 
-	      const data = new UsersModel({
-	        username,
-	        roomId,
-	        alreadyLoggedIn: true,
-	      });
+				 try {
+	          const userCreated = await accountData.save();
+	          try {
+	            const isRoomExists = await RoomsModel.findOne({ roomId });
 
-	      try {
-	        const results = await data.save();
-	        const accessToken: string = generateToken(
-	          {
-	            id: results.id,
-	          },
-	          appConfig.jwtAcessTokenSecretKey,
-	          appConfig.jwtAccessTokenExpiresIn,
-	        );
-	        const refreshToken: string = generateToken(
-	          {
-	            id: results.id,
-	          },
-	          appConfig.jwtRefreshTokenSecretKey,
-	          appConfig.jwtRefreshTokenExpiresIn,
-	        );
+	            if (isRoomExists) {
+	              const isRoomActiveExists = await ActiveRoomsModel.findOne({ idRoom: isRoomExists.id, uid: userCreated.id });
 
-	        return response(req, res, 200, true, 'Your account has been created and you have joined to the room', { accessToken, refreshToken });
-	      } catch (err: any) {
-	        return response(req, res, 500, false, err.message);
+	              if (isRoomActiveExists) {
+	                if (isRoomActiveExists.alreadyLogggedIn) {
+	                  return response(req, res, 200, true, 'The username has been used in this room');
+	                }
+	                const accessToken: string = generateToken(
+	                  {
+	                    id: userCreated.id,
+	                  },
+	                  appConfig.jwtAcessTokenSecretKey,
+	                  appConfig.jwtAccessTokenExpiresIn,
+	                );
+	                const refreshToken: string = generateToken(
+	                  {
+	                    id: userCreated.id,
+	                  },
+	                  appConfig.jwtRefreshTokenSecretKey,
+	                  appConfig.jwtRefreshTokenExpiresIn,
+	                );
+
+	                return response(req, res, 200, true, 'Your acccount has been created, you have joined to the room', { accessToken, refreshToken, roomId: isRoomExists.id });
+	              }
+	              const roomActiveData = new ActiveRoomsModel({ idRoom: isRoomExists.id, uid: userCreated.id, alreadyLoggedIn: true });
+	              try {
+	                await roomActiveData.save();
+	                const accessToken: string = generateToken(
+	                  {
+	                    id: userCreated.id,
+	                  },
+	                  appConfig.jwtAcessTokenSecretKey,
+	                  appConfig.jwtAccessTokenExpiresIn,
+	                );
+	                const refreshToken: string = generateToken(
+	                  {
+	                    id: userCreated.id,
+	                  },
+	                  appConfig.jwtRefreshTokenSecretKey,
+	                  appConfig.jwtRefreshTokenExpiresIn,
+	                );
+
+	                return response(req, res, 200, true, 'Your acccount has been created, you have joined to the room', { accessToken, refreshToken, roomId: isRoomExists.id });
+	              } catch (err: any) {
+	                return response(req, res, 500, false, err.message);
+	              }
+	            } else {
+	              const roomData = new RoomsModel({ roomId });
+	              try {
+	                const results = await roomData.save();
+	                console.log('ini =>', userCreated.id);
+	                const isRoomActiveExists = await ActiveRoomsModel.findOne({ idRoom: results.id, uid: userCreated.id });
+
+	                if (isRoomActiveExists) {
+	                  if (isRoomActiveExists.alreadyLogggedIn) {
+	                    return response(req, res, 200, true, 'The username has been used in this room');
+	                  }
+	                  const accessToken: string = generateToken(
+	                    {
+	                      id: userCreated.id,
+	                    },
+	                    appConfig.jwtAcessTokenSecretKey,
+	                    appConfig.jwtAccessTokenExpiresIn,
+	                  );
+	                  const refreshToken: string = generateToken(
+	                    {
+	                      id: userCreated.id,
+	                    },
+	                    appConfig.jwtRefreshTokenSecretKey,
+	                    appConfig.jwtRefreshTokenExpiresIn,
+	                  );
+
+	                  return response(req, res, 200, true, 'Your acccount has been created, you have joined to the room', { accessToken, refreshToken, roomId: results.id });
+	                }
+	                const roomActiveData = new ActiveRoomsModel({ idRoom: results.id, uid: userCreated.id, alreadyLoggedIn: true });
+	                try {
+	                  await roomActiveData.save();
+	                  const accessToken: string = generateToken(
+	                    {
+	                      id: userCreated.id,
+	                    },
+	                    appConfig.jwtAcessTokenSecretKey,
+	                    appConfig.jwtAccessTokenExpiresIn,
+	                  );
+	                  const refreshToken: string = generateToken(
+	                    {
+	                      id: userCreated.id,
+	                    },
+	                    appConfig.jwtRefreshTokenSecretKey,
+	                    appConfig.jwtRefreshTokenExpiresIn,
+	                  );
+
+	                  return response(req, res, 200, true, 'Your acccount has been created, you have joined to the room', { accessToken, refreshToken, roomId: results.id });
+	                } catch (err: any) {
+	                  return response(req, res, 500, false, err.message);
+	                }
+	              } catch (err: any) {
+	                return response(req, res, 500, false, err.message);
+	              }
+	            }
+	          } catch (err: any) {
+	            return response(req, res, 500, false, err.message);
+	          }
+				 } catch (err: any) {
+	          return response(req, res, 500, false, err.message);
+				 }
 	      }
 	    } catch (err: any) {
 	      return response(req, res, 500, false, err.message);
@@ -81,21 +250,21 @@ namespace UsersControllersModule {
 	    req: ExpressRequest,
 	    res: ExpressResponse,
 	  ): Promise<ExpressResponse> {
-	    const { id } = req.params;
+	    const { id, roomId } = req.params;
 
 	    try {
-	      const user = await UsersModel.findOne({ id });
+	      const activeRoom = await ActiveRoomsModel.findOne({ uid: id, idRoom: roomId });
 
-	      if (!user) {
+	      if (!activeRoom) {
 	        return response(req, res, 400, false, 'The username was not found');
 	      }
 
-	      if (user && !user.alreadyLoggedIn) {
+	      if (activeRoom && !activeRoom.alreadyLoggedIn) {
 	        return response(req, res, 400, false, 'The username has not been used anymore');
 	      }
 
 	      try {
-	        await UsersModel.updateOne({ id: user.id }, { $set: { alreadyLoggedIn: false } });
+	        await ActiveRoomsModel.updateOne({ id: activeRoom.id }, { $set: { alreadyLoggedIn: false } });
 
 	        return response(req, res, 200, true, 'You are success to exit from room');
 	      } catch (err: any) {
