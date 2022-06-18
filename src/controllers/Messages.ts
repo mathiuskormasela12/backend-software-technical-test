@@ -7,7 +7,6 @@ import { response } from '../helpers';
 import MessagesModel from '../models/messages';
 import RoomsModel from '../models/rooms';
 import UsersModel from '../models/users';
-import ActiveRoomsModel from '../models/activeRooms';
 
 namespace MessagesControllersModule {
 	export class MessagesControllers {
@@ -24,21 +23,13 @@ namespace MessagesControllersModule {
 	        try {
 	          const results = await data.save();
 	          try {
-	            const activeRooms = await ActiveRoomsModel.findOne({ id: req.body.activeRoomId });
-
-	            if (activeRooms) {
-	              try {
-	                const user = await UsersModel.findById(activeRooms.uid);
-	                return response(req, res, 200, true, 'The message has been sent', {
-	                  senderName: user.username,
-	                  senderId: user.id,
-	                  message: req.body.message,
-	                });
-	              } catch (err: any) {
-	                return response(req, res, 500, false, err.message);
-	              }
-	            }
-	            return response(req, res, 404, false, 'The active room is not found', results);
+	            const user = await UsersModel.findById(req.body.senderId);
+	            return response(req, res, 200, true, 'The message has been sent', {
+	              _id: results.id,
+	              senderName: user.username,
+	              senderId: user.id,
+	              message: req.body.message,
+	            });
 	          } catch (err: any) {
 	            return response(req, res, 500, false, err.message);
 	          }
@@ -61,31 +52,21 @@ namespace MessagesControllersModule {
 	      const messages = await MessagesModel.find({ activeRoomId: req.params.activeRoomId });
 
 	      if (messages.length < 1) {
-	        return response(req, res, 404, false, 'The messages are empty', []);
+	        return response(req, res, 200, false, 'The messages are empty');
 	      }
 
 	      const modifiedResults: any[] = [];
 
 	      for (const item of messages) {
 	        try {
-	          const activeRoom = await ActiveRoomsModel.findOne(req.params);
+	          const user = await UsersModel.findById(item.senderId);
 
-	          if (activeRoom) {
-	            try {
-	              const user = await UsersModel.findById(activeRoom.uid);
-
-	              modifiedResults.push({
-	                _id: item.id,
-	                senderId: user.id,
-	                senderName: user.username,
-	                message: item.message,
-	              });
-	            } catch (err: any) {
-	              return response(req, res, 500, false, err.message);
-	            }
-	          } else {
-	            return response(req, res, 404, false, 'The user is not found');
-	          }
+	          modifiedResults.push({
+	            _id: item.id,
+	            senderId: item.senderId,
+	            senderName: user.username,
+	            message: item.message,
+	          });
 	        } catch (err: any) {
 	          return response(req, res, 500, false, err.message);
 	        }

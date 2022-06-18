@@ -27,13 +27,16 @@ namespace UsersControllersModule {
 
 	          if (isRoomActiveExists) {
 	            if (isRoomActiveExists.alreadyLoggedIn) {
-	              return response(req, res, 200, true, 'The username has been used in this room');
+	              return response(req, res, 400, false, 'The username has been used in this room');
 	            }
+	            console.log('update id ini =>', isRoomActiveExists.id);
 	            try {
-	              await ActiveRoomsModel.updateOne({ id: isRoomActiveExists.id }, { $set: { alreadyLoggedIn: true } });
+	              await ActiveRoomsModel.findByIdAndUpdate(isRoomActiveExists.id, { $set: { alreadyLoggedIn: true } });
 	              const accessToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                  roomId: isRoomExists.id,
+	                  roomName: roomId,
 	                },
 	                appConfig.jwtAcessTokenSecretKey,
 	                appConfig.jwtAccessTokenExpiresIn,
@@ -41,6 +44,8 @@ namespace UsersControllersModule {
 	              const refreshToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                  roomId: isRoomExists.id,
+	                  roomName: roomId,
 	                },
 	                appConfig.jwtRefreshTokenSecretKey,
 	                appConfig.jwtRefreshTokenExpiresIn,
@@ -57,6 +62,8 @@ namespace UsersControllersModule {
 	              const accessToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                roomId: isRoomExists.id,
+	                roomName: roomId,
 	                },
 	                appConfig.jwtAcessTokenSecretKey,
 	                appConfig.jwtAccessTokenExpiresIn,
@@ -64,6 +71,8 @@ namespace UsersControllersModule {
 	              const refreshToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                roomId: isRoomExists.id,
+	                roomName: roomId,
 	                },
 	                appConfig.jwtRefreshTokenSecretKey,
 	                appConfig.jwtRefreshTokenExpiresIn,
@@ -81,11 +90,13 @@ namespace UsersControllersModule {
 
 	          if (isRoomActiveExists) {
 	            if (isRoomActiveExists.alreadyLogggedIn) {
-	              return response(req, res, 200, true, 'The username has been used in this room');
+	              return response(req, res, 400, false, 'The username has been used in this room');
 	            }
 	            const accessToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                  roomId: results.id,
+	                  roomName: roomId,
 	                },
 	                appConfig.jwtAcessTokenSecretKey,
 	                appConfig.jwtAccessTokenExpiresIn,
@@ -93,6 +104,8 @@ namespace UsersControllersModule {
 	              const refreshToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                  roomId: results.id,
+	                  roomName: roomId,
 	                },
 	                appConfig.jwtRefreshTokenSecretKey,
 	                appConfig.jwtRefreshTokenExpiresIn,
@@ -106,6 +119,8 @@ namespace UsersControllersModule {
 	              const accessToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                  roomId: results.id,
+	                  roomName: roomId,
 	                },
 	                appConfig.jwtAcessTokenSecretKey,
 	                appConfig.jwtAccessTokenExpiresIn,
@@ -113,6 +128,8 @@ namespace UsersControllersModule {
 	              const refreshToken: string = generateToken(
 	                {
 	                  id: user.id,
+	                  roomId: results.id,
+	                  roomName: roomId,
 	                },
 	                appConfig.jwtRefreshTokenSecretKey,
 	                appConfig.jwtRefreshTokenExpiresIn,
@@ -139,11 +156,13 @@ namespace UsersControllersModule {
 
 	              if (isRoomActiveExists) {
 	                if (isRoomActiveExists.alreadyLogggedIn) {
-	                  return response(req, res, 200, true, 'The username has been used in this room');
+	                  return response(req, res, 400, false, 'The username has been used in this room');
 	                }
 	                const accessToken: string = generateToken(
 	                  {
 	                    id: userCreated.id,
+	                    roomId: isRoomExists.id,
+	                    roomName: roomId,
 	                  },
 	                  appConfig.jwtAcessTokenSecretKey,
 	                  appConfig.jwtAccessTokenExpiresIn,
@@ -151,6 +170,8 @@ namespace UsersControllersModule {
 	                const refreshToken: string = generateToken(
 	                  {
 	                    id: userCreated.id,
+	                    roomId: isRoomExists.id,
+	                    roomName: roomId,
 	                  },
 	                  appConfig.jwtRefreshTokenSecretKey,
 	                  appConfig.jwtRefreshTokenExpiresIn,
@@ -164,6 +185,8 @@ namespace UsersControllersModule {
 	                const accessToken: string = generateToken(
 	                  {
 	                    id: userCreated.id,
+	                    roomId: isRoomExists.id,
+	                    roomName: roomId,
 	                  },
 	                  appConfig.jwtAcessTokenSecretKey,
 	                  appConfig.jwtAccessTokenExpiresIn,
@@ -171,6 +194,8 @@ namespace UsersControllersModule {
 	                const refreshToken: string = generateToken(
 	                  {
 	                    id: userCreated.id,
+	                    roomId: isRoomExists.id,
+	                    roomName: roomId,
 	                  },
 	                  appConfig.jwtRefreshTokenSecretKey,
 	                  appConfig.jwtRefreshTokenExpiresIn,
@@ -189,11 +214,13 @@ namespace UsersControllersModule {
 
 	                if (isRoomActiveExists) {
 	                  if (isRoomActiveExists.alreadyLogggedIn) {
-	                    return response(req, res, 200, true, 'The username has been used in this room');
+	                    return response(req, res, 400, false, 'The username has been used in this room');
 	                  }
 	                  const accessToken: string = generateToken(
 	                    {
 	                      id: userCreated.id,
+	                      roomId: results.id,
+	                      roomName: roomId,
 	                    },
 	                    appConfig.jwtAcessTokenSecretKey,
 	                    appConfig.jwtAccessTokenExpiresIn,
@@ -201,6 +228,8 @@ namespace UsersControllersModule {
 	                  const refreshToken: string = generateToken(
 	                    {
 	                      id: userCreated.id,
+	                      roomId: results.id,
+	                      roomName: roomId,
 	                    },
 	                    appConfig.jwtRefreshTokenSecretKey,
 	                    appConfig.jwtRefreshTokenExpiresIn,
@@ -214,6 +243,8 @@ namespace UsersControllersModule {
 	                  const accessToken: string = generateToken(
 	                    {
 	                      id: userCreated.id,
+	                      roomId: results.id,
+	                      roomName: roomId,
 	                    },
 	                    appConfig.jwtAcessTokenSecretKey,
 	                    appConfig.jwtAccessTokenExpiresIn,
@@ -221,6 +252,8 @@ namespace UsersControllersModule {
 	                  const refreshToken: string = generateToken(
 	                    {
 	                      id: userCreated.id,
+	                      roomId: results.id,
+	                      roomName: roomId,
 	                    },
 	                    appConfig.jwtRefreshTokenSecretKey,
 	                    appConfig.jwtRefreshTokenExpiresIn,
@@ -264,7 +297,7 @@ namespace UsersControllersModule {
 	      }
 
 	      try {
-	        await ActiveRoomsModel.updateOne({ id: activeRoom.id }, { $set: { alreadyLoggedIn: false } });
+	        await ActiveRoomsModel.findByIdAndUpdate(activeRoom.id, { $set: { alreadyLoggedIn: false } });
 
 	        return response(req, res, 200, true, 'You are success to exit from room');
 	      } catch (err: any) {
@@ -287,13 +320,17 @@ namespace UsersControllersModule {
 	      const newAccessToken: string = generateToken(
 	        {
 	        	id: decode.id,
+	          roomId: decode.roomId,
+	          roomName: decode.roomName,
 	        },
 	      appConfig.jwtAcessTokenSecretKey,
 	      appConfig.jwtAccessTokenExpiresIn,
 	      );
 	      const newRefreshToken: string = generateToken(
 	        {
-	        id: decode.id,
+	          id: decode.id,
+	          roomId: decode.roomId,
+	          roomName: decode.roomName,
 	        },
 	      appConfig.jwtRefreshTokenSecretKey,
 	      appConfig.jwtRefreshTokenExpiresIn,

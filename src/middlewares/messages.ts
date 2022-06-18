@@ -11,6 +11,8 @@ import { response } from '../helpers';
 export const checkSendMessageForm = [
   check('activeRoomId', "The room id can't be empty").notEmpty(),
   check('activeRoomId', 'The room id is invalid').isMongoId(),
+  check('senderId', "The sender id can't be empty").notEmpty(),
+  check('senderId', 'The sender id is invalid').isMongoId(),
   check('message', "The message can't be empty").notEmpty(),
   check('message', 'The message must be a string').isString(),
 
