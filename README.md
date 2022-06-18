@@ -60,6 +60,7 @@ This is a RESTfull API for a technical test as Full-Stack Developer
 	```
 	{
 		"activeRoomId": "your active room id",
+		"senderId": "your sender id"
 		"message": "your message"
 	}
 	```
