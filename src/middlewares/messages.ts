@@ -9,8 +9,8 @@ import {
 import { response } from '../helpers';
 
 export const checkSendMessageForm = [
-  check('roomId', "The room id can't be empty").notEmpty(),
-  check('roomId', 'The room id must be a string').isString(),
+  check('activeRoomId', "The room id can't be empty").notEmpty(),
+  check('activeRoomId', 'The room id is invalid').isMongoId(),
   check('message', "The message can't be empty").notEmpty(),
   check('message', 'The message must be a string').isString(),
 
@@ -26,7 +26,7 @@ export const checkSendMessageForm = [
 ];
 
 export const checkGetAllMessage = [
-  param('roomId', 'The page must be a string').isString(),
+  param('activeRoomId', 'The room id is invalid').isMongoId(),
 
   (req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
     const errors = validationResult(req);

@@ -22,7 +22,7 @@ namespace MessagesRoutesModul {
 
 	  public routes(): void {
 	    this.expressRouter.post('/', isLoggedIn, checkSendMessageForm, messagesControlerModule.MessagesControllers.sendMessage);
-	    this.expressRouter.get('/:roomId', isLoggedIn, checkGetAllMessage, messagesControlerModule.MessagesControllers.getAllMessages);
+	    this.expressRouter.get('/:activeRoomId', isLoggedIn, checkGetAllMessage, messagesControlerModule.MessagesControllers.getAllMessages);
 	  }
 
 	  public get messagesRoutes(): ExpressRouter {
