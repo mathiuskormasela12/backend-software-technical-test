@@ -72,7 +72,7 @@ namespace MessagesControllersModule {
 	        }
 	      }
 
-	      return response(req, res, 200, true, 'Success to get all messages', modifiedResults, 1, modifiedResults.length);
+	      return response(req, res, 200, true, 'Success to get all messages', modifiedResults.reverse(), 1, modifiedResults.length);
 	    } catch (err: any) {
 	      return response(req, res, 500, false, err.message);
 	    }
