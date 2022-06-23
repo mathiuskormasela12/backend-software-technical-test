@@ -27,7 +27,7 @@ export const appConfig: IAppConfig = {
   jwtRefreshTokenSecretKey: String(JWT_REFRESH_TOKEN_SECRET_KEY),
   jwtAccessTokenExpiresIn: String(JWT_ACCESS_TOKEN_SECRET_EXPIRES_IN),
   jwtRefreshTokenExpiresIn: String(JWT_REFRESH_TOKEN_SECRET_EXPIRES_IN),
-  whileList: [
+  whiteList: [
     'http://localhost:3000',
   ],
 };

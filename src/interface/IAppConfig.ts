@@ -10,5 +10,5 @@ export interface IAppConfig {
 	jwtRefreshTokenSecretKey: string;
 	jwtAccessTokenExpiresIn: string;
 	jwtRefreshTokenExpiresIn: string;
-	whileList: string[];
+	whiteList: string[];
 }

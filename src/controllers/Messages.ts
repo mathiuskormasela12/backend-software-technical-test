@@ -24,6 +24,7 @@ namespace MessagesControllersModule {
 	          const results = await data.save();
 	          try {
 	            const user = await UsersModel.findById(req.body.senderId);
+	            req.socket.emit('SEND_MESSAGE', req.body.activeRoomId);
 	            return response(req, res, 200, true, 'The message has been sent', {
 	              _id: results.id,
 	              senderName: user.username,

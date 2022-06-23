@@ -7,6 +7,9 @@ import morgan from 'morgan';
 import path from 'path';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import http, { Server } from 'http';
+import { Server as SocketIoServer } from 'socket.io';
+import { socket } from '../middlewares/socket';
 
 // import all interfaces
 import { appConfig } from '../config';
@@ -19,16 +22,32 @@ namespace AppModule {
 	export class App {
 	  private app: Application;
 
+	  private server: Server;
+
 	  private port: number;
 
 	  constructor(port: number) {
 	    this.port = port;
 	    this.app = express();
+	    this.server = http.createServer(this.app);
 
 	    this.setup();
 	  }
 
 	  private setup(): void {
+	    // setup socket.io
+	    const io = new SocketIoServer(this.server, {
+	      cors: {
+	        origin: appConfig.whiteList,
+	      },
+	    });
+
+	    io.on('connection', () => {
+	      console.log('a user has connected');
+	    });
+
+	    this.app.use(socket(io));
+
 	    // setup several middlewares
 	    this.app.use(morgan('dev'));
 	    this.app.use(compression());
@@ -41,7 +60,7 @@ namespace AppModule {
 	    // setup cors
 	    const corsOptions = {
 	      origin(origin: any, callback: any) {
-	        if (appConfig.whileList.indexOf(origin) !== -1 || !origin) {
+	        if (appConfig.whiteList.indexOf(origin) !== -1 || !origin) {
 	          callback(null, true);
 	        } else {
 	          callback(new Error('Blocked by Cors'));
@@ -69,8 +88,7 @@ namespace AppModule {
 	  }
 
 	  public listen(): void {
-	    this.app.listen(this.port, () => {
-	      // eslint-disable-next-line no-console
+	    this.server.listen(this.port, () => {
 	      console.log(`The RESTful API is running at ${appConfig.appUrl}`);
 	    });
 	  }
